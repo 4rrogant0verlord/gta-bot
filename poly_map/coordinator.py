@@ -6,7 +6,7 @@ def mouse_callback(event, x, y, flags, params):
         global right_clicks
         right_clicks.append([x, y])
         print right_clicks
-img = cv2.imread("test_map.png")
+img = cv2.imread("test_map.jpg")
 cv2.namedWindow('image', cv2.WINDOW_NORMAL)
 cv2.setMouseCallback('image', mouse_callback)
 cv2.imshow('image', img)
