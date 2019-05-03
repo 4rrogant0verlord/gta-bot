@@ -29,7 +29,39 @@ east_los_santos = np.array([[1338, 1185], [1338, 1150], [1351, 1150], [1351, 106
 mulholland_intersection = np.array([[1144, 1065], [1144, 963], [1230, 963], [1230, 1065], [1144, 1065]])
 downtown_los_santos = np.array([[1230, 1066], [1143, 1066], [1143, 1006], [1123, 1006], [1123, 1031], [1120, 1031], [1120, 1124], [1142, 1124], [1142, 1134], [1230, 1134], [1230, 1066]])
 commerce = np.array([[1200, 1239], [1106, 1239], [1106, 1169], [1120, 1169], [1120, 1125], [1141, 1125], [1141, 1135], [1230, 1135], [1230, 1169], [1216, 1169], [1216, 1210], [1200, 1210], [1200, 1239]])
-zones = [ganton, idlewood, little_mexico, unity_station, el_corona, glen_park, jefferson, east_los_santos, mulholland_intersection, downtown_los_santos]
+los_flores = np.array([[1429, 1061], [1469, 1061], [1469, 1126], [1442, 1126], [1442, 1144], [1429, 1144], [1429, 1061]])
+east_beach = np.array([[1470, 1061], [1525, 1061], [1525, 1239], [1439, 1239], [1439, 1186], [1443, 1186], [1443, 1127], [1470, 1127], [1470, 1061]])
+willow_field = np.array([[1272, 1240], [1460, 1240], [1460, 1296], [1331, 1296], [1331, 1329], [1272, 1329], [1272, 1240]])
+playa_del_seville = np.array([[1461, 1240], [1461, 1310], [1525, 1310], [1525, 1240], [1461, 1240]])
+north_ocean_docks = np.array([[1525, 1311], [1525, 1354], [1357, 1354], [1357, 1380], [1272, 1380], [1272, 1330], [1332, 1330], [1332, 1297], [1460, 1297], [1460, 1311], [1525, 1311]])
+south_ocean_docks = np.array([[1374, 1363], [1374, 1459], [1488, 1459], [1488, 1363], [1374, 1363]])
+las_colinas = np.array([[1287, 1008], [1525, 1008], [1525, 1060], [1350, 1060], [1350, 1063], [1327, 1063], [1327, 1055], [1295, 1055], [1295, 1052], [1287, 1052], [1287, 1008]])
+los_santos_airport = np.array([[1327, 1381], [1327, 1464], [1124, 1464], [1124, 1380], [1087, 1380], [1087, 1330], [1271, 1330], [1271, 1381], [1327, 1381]])
+verdant_bluffs = np.array([[1041, 1239], [1041, 1278], [1010, 1278], [1010, 1405], [1086, 1405], [1086, 1329], [1196, 1329], [1196, 1240], [1041, 1239]])
+conference_center = np.array([[1105, 1207], [1041, 1206], [1041, 1238], [1105, 1238], [1105, 1207]])
+zones = [
+	ganton,
+	idlewood,
+	little_mexico,
+	unity_station,
+	el_corona,
+	glen_park,
+	jefferson,
+	east_los_santos,
+	mulholland_intersection,
+	downtown_los_santos,
+	commerce,
+	los_flores,
+	east_beach,
+	willow_field,
+	playa_del_seville,
+	north_ocean_docks,
+	south_ocean_docks,
+	las_colinas,
+	los_santos_airport,
+	verdant_bluffs,
+	conference_center
+	]
 
 for i in zones:
 	cv2.fillPoly(image, [i], random.choice(colors))

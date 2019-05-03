@@ -9,7 +9,7 @@ def plot_coords(ax, ob):
     x, y = ob.xy
     ax.plot(x, y, 'o', color='#999999', zorder=1)
 
-img=mpimg.imread('../gtasa-blank-vector.png')
+img=mpimg.imread('../../gtasa-blank-vector.png')
 fig,ax = plt.subplots(1)
 ganton = [(1438, 1186), (1438, 1239), (1337, 1239), (1337, 1186), (1438, 1186)]
 imgplot = plt.imshow(img)
@@ -18,7 +18,4 @@ plot_coords(ax, ganton.exterior)
 patch = PolygonPatch(ganton, facecolor=BLUE, edgecolor='none', alpha=0.7, zorder=2,)
 ax.add_patch(patch)
 ax.set_aspect(1)
-fig.savefig('out.png', bbox_inches='tight', pad_inches=0)
-# plt.imsave("test_map.png", img)
-# plt.imsave('test_map.png', img)
-# plt.show()
+plt.show()
