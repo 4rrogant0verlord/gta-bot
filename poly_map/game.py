@@ -3,39 +3,40 @@ import random
 import numpy as np
 import time
 import cv2
-image = cv2.imread("../gtasa-geographic-1.0.jpg")
+image = cv2.imread("../gtasa-blank-vector.jpg")
 
 class Gang:
-	def __init__(self, name, colors, terr):
+	def __init__(self, name, colors, county, terr):
 		self.name = name
 		self.colors = colors
+		self.county = county
 		self.terr = []
 
 grove_colors = (34, 139, 34)
 ballas_colors = (128, 0, 128)
 vagos_colors = (0, 215, 255)
 aztecas_colors = (255, 144, 30)
-mcb_colors = (153, 136, 119)
+mcb_colors = (20, 20, 20)
 rgt_colors = (0, 0, 204)
 dnb_colors = (11, 134, 184)
 rifas_colors = (185, 185, 0)
-leone_colors = (0, 0, 139)
+leone_colors = (76, 144, 224)
 forelli_colors = (112, 25, 25)
-sindacco_colors = (40, 40, 40)
+sindacco_colors = (153, 136, 119)
 black = (0, 0, 0)
 red = (0, 0, 255)
 
-grove = Gang("Grove Street Families", grove_colors, [])
-ballas = Gang("Ballas", ballas_colors, [])
-vagos = Gang("Los Santos Vagos", vagos_colors, [])
-aztecas = Gang("Varios Los Aztecas", aztecas_colors, [])
-mcb = Gang("Mountain Cloud Boys", mcb_colors, [])
-rgt = Gang("Red Gecko Tong", rgt_colors, [])
-dnb = Gang("Da Nang Boys", dnb_colors, [])
-rifas = Gang("San Fierro Rifas", rifas_colors, [])
-leone = Gang("Leone Family", leone_colors, [])
-forelli = Gang("Forelli Family", forelli_colors, [])
-sindacco = Gang("Sindacco Family", sindacco_colors, [])
+grove = Gang("Grove Street Families", grove_colors, "Los Santos", [])
+ballas = Gang("Ballas", ballas_colors, "Los Santos", [])
+vagos = Gang("Los Santos Vagos", vagos_colors, "Los Santos", [])
+aztecas = Gang("Varios Los Aztecas", aztecas_colors, "Los Santos", [])
+mcb = Gang("Mountain Cloud Boys", mcb_colors, "San Fierro", [])
+rgt = Gang("Red Gecko Tong", rgt_colors, "San Fierro", [])
+dnb = Gang("Da Nang Boys", dnb_colors, "San Fierro", [])
+rifas = Gang("San Fierro Rifas", rifas_colors, "San Fierro", [])
+leone = Gang("Leone Family", leone_colors, "Las Venturas", [])
+forelli = Gang("Forelli Family", forelli_colors, "Las Venturas", [])
+sindacco = Gang("Sindacco Family", sindacco_colors, "Las Venturas", [])
 
 ls_gangs = [
 	grove,
@@ -55,24 +56,15 @@ lv_gangs = [
 	sindacco
 	]
 sa_gangs = [
-	grove,
-	ballas,
-	vagos,
-	aztecas,
-	mcb,
-	rgt,
-	dnb,
-	rifas,
-	leone,
-	forelli,
-	sindacco
+	ls_gangs,
+	sf_gangs,
+	lv_gangs
 	]
 
 class Zone:
 	def __init__(self, name, coords, owner):
 		self.name = name
 		self.coords = coords
-
 		self.owner = owner
 	def change_owner(self, new_owner):
 		self.owner = new_owner
@@ -378,42 +370,110 @@ for i in lv_zones:
 	i.owner = random.choice(lv_gangs)
 	i.owner.terr.append(i)
 
-# attack mechanism
 c = 0
+overlay = image.copy()
+output = image.copy()
+alpha = 0.7
+for i in sa_counties:
+	for o in i:
+			cv2.fillPoly(overlay, [np.array(o.coords)], o.owner.colors)
+cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
+for i in sa_counties:
+	for o in i:
+		cv2.polylines(output, [np.array(o.coords)], True, black, thickness=5)
+cv2.namedWindow('test map', cv2.WINDOW_NORMAL)
+cv2.imshow("test map", output)
+cv2.waitKey(5)
+# cv2.imwrite((str(c) + ".jpg"), output)
+
+# attack mechanism
+finals = []
+cands = []
 while True:
+	while len(cands) != 3:
+		overlay = image.copy()
+		output = image.copy()
+		alpha = 0.7
+		for i in sa_counties:
+			for o in i:
+				cv2.fillPoly(overlay, [np.array(o.coords)], o.owner.colors)
+		cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
+		for i in sa_counties:
+			for o in i:
+				cv2.polylines(output, [np.array(o.coords)], True, black, thickness=5)
+		a = random.choice(sa_gangs)
+		ra = random.choice(a)
+		if ra.county == "Los Santos":
+			ls_gangs.remove(ra)
+			v = random.choice(ls_gangs)
+			ls_gangs.append(ra)
+		elif ra.county == "San Fierro":
+			sf_gangs.remove(ra)
+			v = random.choice(sf_gangs)
+			sf_gangs.append(ra)
+		elif ra.county == "Las Venturas":
+			lv_gangs.remove(ra)
+			v = random.choice(lv_gangs)
+			lv_gangs.append(ra)
+		vt = random.choice(v.terr)
+		v.terr.remove(vt)
+		ra.terr.append(vt)
+		vt.change_owner(ra)
+		cv2.fillPoly(overlay, [np.array(vt.coords)], ra.colors)
+		cv2.polylines(output, [np.array(vt.coords)], True, red, thickness=5)
+		c+=1
+		print str(ra.name) + " occupied " + str(vt.name) + ", previously occupied by " + str(v.name) + "."
+		for i in sa_gangs:
+			for o in i:
+				if o.terr == []:
+					print o.name + " has been completely defeated."
+					if o.county == "Los Santos":
+						ls_gangs.remove(o)
+					elif o.county == "San Fierro":
+						sf_gangs.remove(o)
+					elif o.county == "Las Venturas":
+						lv_gangs.remove(o)
+		# time.sleep(1)
+		cv2.namedWindow('test map', cv2.WINDOW_NORMAL)
+		cv2.imshow("test map", output)
+		cv2.waitKey(5)
+		# cv2.imwrite((str(c) + ".jpg"), output)
+		for i in sa_gangs:
+			if len(i) == 1:
+				sa_gangs.remove(i)
+				finals.append(i[0])
+				cands.append(i[0])
+	overlay = image.copy()
+	output = image.copy()
+	alpha = 0.7
 	for i in sa_counties:
 		for o in i:
-			cv2.fillPoly(image, [np.array(o.coords)], o.owner.colors)
-			cv2.polylines(image, [np.array(o.coords)], True, black, thickness=5)
-	a = random.choice(sa_gangs)
-	sa_gangs.remove(a)
-	v = random.choice(sa_gangs)
+			cv2.fillPoly(overlay, [np.array(o.coords)], o.owner.colors)
+	cv2.addWeighted(overlay, alpha, output, 1 - alpha, 0, output)
+	for i in sa_counties:
+		for o in i:
+			cv2.polylines(output, [np.array(o.coords)], True, black, thickness=5)
+	a = random.choice(finals)
+	finals.remove(a)
+	v = random.choice(finals)
+	finals.append(a)
 	vt = random.choice(v.terr)
 	v.terr.remove(vt)
 	a.terr.append(vt)
-	cv2.fillPoly(image, [np.array(vt.coords)], a.colors)
-	cv2.polylines(image, [np.array(vt.coords)], True, red, thickness=15)
-	sa_gangs.append(a)
+	vt.change_owner(a)
+	cv2.fillPoly(overlay, [np.array(vt.coords)], a.colors)
+	cv2.polylines(output, [np.array(vt.coords)], True, red, thickness=5)
 	c+=1
 	print str(a.name) + " occupied " + str(vt.name) + ", previously occupied by " + str(v.name) + "."
-	for i in sa_gangs:
+	for i in finals:
 		if i.terr == []:
 			print i.name + " has been completely defeated."
-			sa_gangs.remove(i)
-	cv2.namedWindow('test map', cv2.WINDOW_NORMAL)
-	cv2.imshow("test map", image)
-	cv2.waitKey(0)
-	# cv2.imwrite((str(c) + ".jpg"), image)
+			finals.remove(i)
 	# time.sleep(1)
-	if len(sa_gangs) == 1:
-		print "Done in " + str(c) + " tries. The winner is the " + str(sa_gangs[0].name) + "."
+	cv2.namedWindow('test map', cv2.WINDOW_NORMAL)
+	cv2.imshow("test map", output)
+	cv2.waitKey(5)
+	# cv2.imwrite((str(c) + ".jpg"), output)
+	if len(finals) == 1:
+		print "Done in " + str(c) + " tries. The winner is the " + str(finals[0].name) + "."
 		break
-
-
-# terr = []
-# for i in ls_gangs:
-# 	print i.name
-# 	for t in i.terr:
-# 		terr.append(t.name)
-# 	print terr
-# 	terr = []
